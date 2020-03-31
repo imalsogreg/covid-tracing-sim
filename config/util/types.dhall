@@ -1,6 +1,6 @@
-let Condition = < Asthma : {} | Diabetes : {} | Opeisity : {} >
+let Condition = < Asthma | Diabetes | Opeisity >
 
-let ExposureLevel = < Low : {} | Medium : {} | High : {} >
+let ExposureLevel = < Low | Medium | High >
 
 let TimedInfection =
     { time : Text
