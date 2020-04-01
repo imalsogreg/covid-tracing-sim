@@ -3,6 +3,10 @@
 A toy project to simulate transmission of covid-19 under varyous types of
 contract tracing.
 
+*Disclaimer* I'm not an epidemiologist, I have no expertise in the virus. This
+project really is just a toy and a learning tool for me.
+
+
 ### Running
 
 ``` shell
