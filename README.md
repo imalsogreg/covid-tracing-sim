@@ -34,7 +34,7 @@ Running currently dumps successive states to stdout
 
  - [x] Define world state
  - [x] Simulation moves people around
- - [-] Simulation transmits infections from person to person
+ - [x] Simulation transmits infections from person to person
  - [ ] World state includes covid-testing
  - [ ] World state includes contact tracing data
  - [ ] Visualzation of state
