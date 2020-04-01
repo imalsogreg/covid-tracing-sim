@@ -1,6 +1,6 @@
 ## Covid-19 contract tracing simulator
 
-A toy project to simulate transmission of covid-19 under varyous types of
+A toy project to simulate transmission of covid-19 under various types of
 contract tracing.
 
 *Disclaimer* I'm not an epidemiologist, I have no expertise in the virus. This
