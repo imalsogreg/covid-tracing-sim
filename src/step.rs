@@ -50,38 +50,51 @@ fn catch_germs
 {
     let mut p = p0;
 
-    let interpersonal_distance_squared = |(me, other_person) : (&Person,&Person)| {
-        (me.r2.location.x - other_person.r2.location.x).powi(2) +
-            (me.r2.location.y - other_person.r2.location.y).powi(2)
-    };
-
-    let is_infectious = |other_person : &Person| {
-        !other_person.health.infections.is_empty()
-    };
-
-    // Make this more interesting later
-    let infectivity = |other_person : &Person| {
-        if is_infectious(other_person) {1.0} else {0.0}
-    };
-
-    let infection_receptivity = |me : &Person|{
-        if me.health.infections.is_empty() {
-            let age = now - me.health.birthdate.and_hms(0,0,0);
-            (age.num_days() as f64 / 365.0 / 200.0 + 0.2 * me.health.conditions.len() as f64).max(1.0)
-        } else {
-            // Already got it. Immune!
-            0.0
-        }
-    };
-
+    // This is the lambda parameter of a poisson process representing the
+    // events when 'other_person' infects 'me'
     let infection_per_second = |(me, other_person) : (&Person, &Person)| {
-      infection_receptivity(me)
-            * infectivity(other_person)
-            * (1.0 / interpersonal_distance_squared((me,other_person))).max(1.0)
+
+      // A peak-infectious person will tend to cause one infection per
+      // 20 minutes of exposure with a healthy young person standing 1m
+      // away or closer
+      //
+      // This rate can be modulated up or down by the recipient's health,
+      // the distance between the people, etc.
+      let baseline_rate = 1.0 / (20.0 * 60.0);
+
+      let interpersonal_distance_squared =
+            (me.r2.location.x - other_person.r2.location.x).powi(2) +
+            (me.r2.location.y - other_person.r2.location.y).powi(2);
+
+        // TODO make this more interesting - e.g. a person becomes less infective
+        // after recovering from their infection
+        let other_person_infectivity = if !other_person.health.infections.is_empty() {1.0} else {0.0};
+
+        // My age and my preexisting conditions scale the rate of my infections
+        // Every 10 years of age dou
+        let my_receptivity = if me.health.infections.is_empty() {
+            let my_age = now - me.health.birthdate.and_hms(0,0,0);
+
+            // Every 10 years after age 40 increases my infection rate
+            let age_coeff = (((my_age.num_days() / 356) - 40) / 10) as f64;
+            let conditions_coeff = (1 + me.health.conditions.len()) as f64;
+            age_coeff + conditions_coeff
+        } else {
+            // Already got it - immune!
+            0.0
+        };
+
+        let distance_coeff = (1.0 / interpersonal_distance_squared).max(1.0);
+
+        // Final s^-1 parameter is the baseline rate scaled up or down by infectivity,
+        // receptivity, and distance
+        baseline_rate * other_person_infectivity * my_receptivity * distance_coeff
     };
 
     for other_person in people {
-        if is_infectious(other_person) && infection_per_second((&p, other_person)) > 0.1 {
+        // TODO: This is not the right way to sample a poisson process!
+        // But I haven't added any RNG to the simulation yet
+        if infection_per_second((&p, other_person)) > 0.1 {
                 p.health.infections.push( TimedInfection { time: now, exposure: ExposureLevel::Medium });
         }
     }
