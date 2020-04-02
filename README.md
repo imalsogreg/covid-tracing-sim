@@ -25,7 +25,7 @@ The simulator uses `dhall-to-json` internally to convert the configuration files
 into JSON, then it deserializes those into rust values with
 [serde](https://serde.rs). Rust and serde are both typed, so there is quite a
 lot of repetition between definition of the dhall types and rust types. It would
-be cool if dhall could be used as an IDL within rust as described so that we
+be cool if dhall could be used as an IDL within rust so that we
 only have to define the types once.
 
 ### State of the project
