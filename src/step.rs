@@ -71,7 +71,7 @@ fn catch_germs
         let other_person_infectivity = if !other_person.health.infections.is_empty() {1.0} else {0.0};
 
         // My age and my preexisting conditions scale the rate of my infections
-        // Every 10 years of age dou
+        // Every 10 years of age multiplies the rate (TODO: this is weird and unrealistic)
         let my_receptivity = if me.health.infections.is_empty() {
             let my_age = now - me.health.birthdate.and_hms(0,0,0);
 
